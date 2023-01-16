@@ -16,7 +16,7 @@ class PostingListResource(Resource) :
 
         # 1. 클라이언트가 보낸 데이터를 받아온다.
         if 'photo' not in request.files :
-            return {'error':'파일을 업로드 하세요.'}
+            return {'error':'파일을 업로드 하십시오.'}
         if 'content' not in request.form :
             return {'error':'내용을 입력 하세요.'}
         file = request.files['photo']

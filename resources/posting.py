@@ -130,3 +130,42 @@ class PostingListResource(Resource) :
         # 5. 결과를 클라이언트에 보내준다.
 
         return {'result':'success'}
+
+    @jwt_required()
+    def get(self) :
+        user_id = get_jwt_identity()
+        offset=request.args.get('offset')
+        limit=request.args.get('limit')
+
+        try :
+            connection = get_connection()
+            query = '''select f.followeeId,u.email,p.id as postingId,p.imgUrl,p.content,p.createdAt
+                    from follow f
+                    join user u
+                    on u.id = f.followeeId
+                    join posting p
+                    on p.userId = f.followeeId
+                    where followerId=%s
+                    order by p.createdAt desc
+                    limit '''+offset+''','''+limit+''';'''
+            record = (user_id,)
+            cursor = connection.cursor(dictionary=True)
+            cursor.execute(query,record)
+            result_list = cursor.fetchall()
+
+            print(result_list)
+            i = 0
+            for row in result_list :
+                result_list[i]['createdAt']=row['createdAt'].isoformat()
+                i = i+1
+
+
+            cursor.close()
+            connection.close()
+        except Error as e :
+            print(e)
+            cursor.close()
+            connection.close()
+            return{'error':str(e)},500
+
+        return {'result':'success','items':result_list,'count':len(result_list)},200

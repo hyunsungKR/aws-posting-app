@@ -10,6 +10,7 @@ provider:
   name: aws
   runtime: python3.9
   region: ap-northeast-2
+  timeout: 25
 
 functions:
   api:

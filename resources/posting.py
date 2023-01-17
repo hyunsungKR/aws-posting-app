@@ -172,3 +172,53 @@ class PostingListResource(Resource) :
             return{'error':str(e)},500
 
         return {'result':'success','items':result_list,'count':len(result_list)},200
+
+
+class PostingTagResource(Resource) :
+
+    @jwt_required()
+    def get(self) :
+        name=request.args.get('name')
+        offset=request.args.get('offset')
+        limit=request.args.get('limit')
+        user_id = get_jwt_identity()
+
+        
+        try :
+            connection = get_connection()
+
+            query = '''select u.email,p.imgUrl,p.content,p.createdAt,
+                    if(l.userId is null,0,1) as isLike ,t.postingId
+                    from tag_name tn
+                    join tag t
+                    on tn.id = t.tagId
+                    join posting p
+                    on p.id = t.postingId
+                    join user u
+                    on p.userId = u.id
+                    left join `like` l
+                    on l.userId=%s and p.id = l.postingId
+                    where name = %s
+                    limit '''+offset+''','''+limit+''';'''
+            record = (user_id,name)
+            cursor=connection.cursor(dictionary=True)
+            cursor.execute(query,record)
+            result_list=cursor.fetchall()
+
+            print(result_list)
+
+            i = 0
+            for row in result_list :
+                result_list[i]['createdAt']=row['createdAt'].isoformat()
+                i = i+1
+
+            cursor.close()
+            connection.close()
+        except Error as e :
+            print(e)
+            cursor.close()
+            connection.close()
+            return{'error':str(e)},500
+
+        
+        return {'result':'success','items':result_list,'count':len(result_list)},200

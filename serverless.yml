@@ -11,7 +11,6 @@ provider:
   runtime: python3.9
   region: ap-northeast-2
   timeout: 25
-  stage: prod
 
 functions:
   api:

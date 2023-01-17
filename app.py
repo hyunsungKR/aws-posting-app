@@ -3,6 +3,7 @@ from flask_restful import Api
 from config import Config
 from flask_jwt_extended import JWTManager
 from resources.follow import FollowResource
+from resources.like import LikeResource
 from resources.posting import PostingListResource
 
 from resources.user import UserLoginResource, UserLogoutResource, UserRegisterResource
@@ -33,6 +34,8 @@ api.add_resource(UserLogoutResource,'/user/logout')
 api.add_resource(PostingListResource,'/posting')
 
 api.add_resource(FollowResource,'/follow/<int:followee_id>')
+
+api.add_resource(LikeResource,'/posting/<int:posting_id>/like')
 
 
 if __name__ == '__main__' :

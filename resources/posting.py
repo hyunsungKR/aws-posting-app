@@ -139,12 +139,15 @@ class PostingListResource(Resource) :
 
         try :
             connection = get_connection()
-            query = '''select f.followeeId,u.email,p.id as postingId,p.imgUrl,p.content,p.createdAt
+            query = '''select f.followeeId,u.email,p.id as postingId,p.imgUrl,p.content,p.createdAt,
+                    if(l.userId is null,0,1) as isLike
                     from follow f
                     join user u
                     on u.id = f.followeeId
                     join posting p
                     on p.userId = f.followeeId
+                    left join `like` l
+                    on p.id = l.postingId
                     where followerId=%s
                     order by p.createdAt desc
                     limit '''+offset+''','''+limit+''';'''
